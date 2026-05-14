@@ -1,0 +1,58 @@
+body {
+    background-color: #1a472a; /* Verde casino */
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#game {
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    border-radius: 20px;
+    border: 3px solid #ffd700;
+}
+
+.cards-row {
+    display: flex;
+    justify-content: center;
+    min-height: 80px;
+    margin-bottom: 10px;
+}
+
+.card {
+    background: white;
+    color: black;
+    width: 50px;
+    height: 70px;
+    margin: 5px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    border: 1px solid #000;
+}
+
+.btn {
+    padding: 12px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#hit-btn { background: #e74c3c; color: white; }
+#stand-btn { background: #3498db; color: white; }
+#reset-btn { background: #f1c40f; color: black; }
+
+.hidden { display: none; }
+#message { font-size: 1.5em; font-weight: bold; margin-top: 15px; color: #ffd700; }
