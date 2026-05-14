@@ -4,7 +4,7 @@ tg.expand();
 let deck = [];
 let playerHand = [];
 let dealerHand = [];
-let gameOver = false;
+let isGameOver = false;
 
 const suits = ['❤️', '💎', '♣️', '♠️'];
 const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -13,24 +13,20 @@ function createDeck() {
     deck = [];
     for (let s of suits) {
         for (let v of values) {
-            deck.push({ value: v, suit: s });
+            deck.push({ v, s });
         }
     }
-    shuffle();
-}
-
-function shuffle() {
     deck.sort(() => Math.random() - 0.5);
 }
 
-function getScore(hand) {
+function calculateScore(hand) {
     let score = 0;
     let aces = 0;
-    for (let card of hand) {
-        if (['J','Q','K'].includes(card.value)) score += 10;
-        else if (card.value === 'A') { score += 11; aces++; }
-        else score += parseInt(card.value);
-    }
+    hand.forEach(card => {
+        if (['J', 'Q', 'K'].includes(card.v)) score += 10;
+        else if (card.v === 'A') { score += 11; aces++; }
+        else score += parseInt(card.v);
+    });
     while (score > 21 && aces > 0) {
         score -= 10;
         aces--;
@@ -38,86 +34,78 @@ function getScore(hand) {
     return score;
 }
 
-function renderCard(card, elementId) {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = `<span>${card.value}</span><span>${card.suit}</span>`;
-    document.getElementById(elementId).appendChild(div);
+function drawCard(hand, elementId) {
+    const card = deck.pop();
+    hand.push(card);
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'card';
+    cardDiv.innerHTML = `<div>${card.v}</div><div style="font-size:1.5rem">${card.s}</div>`;
+    if (card.s === '❤️' || card.s === '💎') cardDiv.style.color = 'red';
+    document.getElementById(elementId).appendChild(cardDiv);
+    return card;
 }
 
-function endGame(msg) {
-    gameOver = true;
-    document.getElementById('message').innerText = msg;
-    document.getElementById('hit-btn').classList.add('hidden');
-    document.getElementById('stand-btn').classList.add('hidden');
-    document.getElementById('reset-btn').classList.remove('hidden');
+function startNewGame() {
+    isGameOver = false;
+    playerHand = [];
+    dealerHand = [];
+    createDeck();
+
+    document.getElementById('player-cards').innerHTML = '';
+    document.getElementById('dealer-cards').innerHTML = '';
+    document.getElementById('result-overlay').classList.add('hidden');
+    document.getElementById('game-btns').classList.remove('hidden');
+    document.getElementById('end-btns').classList.add('hidden');
+
+    // Reparto inicial
+    drawCard(playerHand, 'player-cards');
+    drawCard(playerHand, 'player-cards');
+    drawCard(dealerHand, 'dealer-cards'); // El crupier empieza con una visible
+
+    updateScores();
+}
+
+function updateScores() {
+    document.getElementById('player-score').innerText = calculateScore(playerHand);
+    document.getElementById('dealer-score').innerText = calculateScore(dealerHand);
 }
 
 document.getElementById('hit-btn').onclick = () => {
-    if (gameOver) return;
-    const card = deck.pop();
-    playerHand.push(card);
-    renderCard(card, 'player-cards');
-    const score = getScore(playerHand);
-    document.getElementById('player-score').innerText = score;
-    if (score > 21) endGame("¡TE PASASTE! 💥");
+    if (isGameOver) return;
+    drawCard(playerHand, 'player-cards');
+    const score = calculateScore(playerHand);
+    updateScores();
+    if (score > 21) finishGame("¡TE PASASTE! 💀");
 };
 
 document.getElementById('stand-btn').onclick = () => {
-    if (gameOver) return;
+    if (isGameOver) return;
     
-    let dScore = getScore(dealerHand);
-    while (dScore < 17) {
-        const card = deck.pop();
-        dealerHand.push(card);
-        renderCard(card, 'dealer-cards');
-        dScore = getScore(dealerHand);
+    // Turno del Crupier
+    while (calculateScore(dealerHand) < 17) {
+        drawCard(dealerHand, 'dealer-cards');
     }
-    document.getElementById('dealer-score').innerText = dScore;
-    
-    const pScore = getScore(playerHand);
-    if (dScore > 21) endGame("¡EL CRUPIER SE PASÓ! Ganaste 🏆");
-    else if (pScore > dScore) endGame("¡GANASTE! 🏆");
-    else if (pScore < dScore) endGame("PERDISTE 💀");
-    else endGame("EMPATE 🤝");
+    updateScores();
+
+    const pScore = calculateScore(playerHand);
+    const dScore = calculateScore(dealerHand);
+
+    if (dScore > 21) finishGame("¡CRUPIER SE PASÓ! 🏆");
+    else if (pScore > dScore) finishGame("¡GANASTE! 🏆");
+    else if (pScore < dScore) finishGame("PERDISTE 💀");
+    else finishGame("EMPATE 🤝");
 };
 
-document.getElementById('reset-btn').onclick = () => {
-    // Reiniciar mesa
-    playerHand = [];
-    dealerHand = [];
-    gameOver = false;
-    document.getElementById('player-cards').innerHTML = '';
-    document.getElementById('dealer-cards').innerHTML = '';
-    document.getElementById('player-score').innerText = '0';
-    document.getElementById('dealer-score').innerText = '0';
-    document.getElementById('message').innerText = '';
-    document.getElementById('hit-btn').classList.remove('hidden');
-    document.getElementById('stand-btn').classList.remove('hidden');
-    document.getElementById('reset-btn').classList.add('hidden');
-    
-    if (deck.length < 10) createDeck();
-    initGame();
-};
-
-document.getElementById('exit-btn').onclick = () => {
-    tg.close();
-};
-
-function initGame() {
-    // Reparto inicial
-    const p1 = deck.pop();
-    const p2 = deck.pop();
-    playerHand.push(p1, p2);
-    renderCard(p1, 'player-cards');
-    renderCard(p2, 'player-cards');
-    document.getElementById('player-score').innerText = getScore(playerHand);
-
-    const d1 = deck.pop();
-    dealerHand.push(d1);
-    renderCard(d1, 'dealer-cards');
-    document.getElementById('dealer-score').innerText = getScore(dealerHand);
+function finishGame(message) {
+    isGameOver = true;
+    document.getElementById('result-text').innerText = message;
+    document.getElementById('result-overlay').classList.remove('hidden');
+    document.getElementById('game-btns').classList.add('hidden');
+    document.getElementById('end-btns').classList.remove('hidden');
 }
 
-createDeck();
-initGame();
+document.getElementById('rematch-btn').onclick = startNewGame;
+document.getElementById('exit-btn').onclick = () => tg.close();
+
+// Inicializar
+startNewGame();
