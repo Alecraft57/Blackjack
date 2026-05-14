@@ -16,6 +16,10 @@ function createDeck() {
             deck.push({ value: v, suit: s });
         }
     }
+    shuffle();
+}
+
+function shuffle() {
     deck.sort(() => Math.random() - 0.5);
 }
 
@@ -37,15 +41,8 @@ function getScore(hand) {
 function renderCard(card, elementId) {
     const div = document.createElement('div');
     div.className = 'card';
-    div.innerHTML = `${card.value}<br>${card.suit}`;
+    div.innerHTML = `<span>${card.value}</span><span>${card.suit}</span>`;
     document.getElementById(elementId).appendChild(div);
-}
-
-function checkGameOver() {
-    const pScore = getScore(playerHand);
-    if (pScore > 21) {
-        endGame("¡Te has pasado! Pierdes. 😭");
-    }
 }
 
 function endGame(msg) {
@@ -54,9 +51,6 @@ function endGame(msg) {
     document.getElementById('hit-btn').classList.add('hidden');
     document.getElementById('stand-btn').classList.add('hidden');
     document.getElementById('reset-btn').classList.remove('hidden');
-    
-    // Enviar resultado al bot de Telegram
-    tg.sendData(`Resultado: ${msg} con ${getScore(playerHand)} puntos.`);
 }
 
 document.getElementById('hit-btn').onclick = () => {
@@ -64,28 +58,66 @@ document.getElementById('hit-btn').onclick = () => {
     const card = deck.pop();
     playerHand.push(card);
     renderCard(card, 'player-cards');
-    document.getElementById('player-score').innerText = getScore(playerHand);
-    checkGameOver();
+    const score = getScore(playerHand);
+    document.getElementById('player-score').innerText = score;
+    if (score > 21) endGame("¡TE PASASTE! 💥");
 };
 
 document.getElementById('stand-btn').onclick = () => {
-    while (getScore(dealerHand) < 17) {
+    if (gameOver) return;
+    
+    let dScore = getScore(dealerHand);
+    while (dScore < 17) {
         const card = deck.pop();
         dealerHand.push(card);
         renderCard(card, 'dealer-cards');
+        dScore = getScore(dealerHand);
     }
-    const pScore = getScore(playerHand);
-    const dScore = getScore(dealerHand);
+    document.getElementById('dealer-score').innerText = dScore;
     
-    if (dScore > 21 || pScore > dScore) endGame("¡GANASTE! 🏆");
-    else if (pScore < dScore) endGame("Perdiste contra el crupier. 💀");
-    else endGame("Empate. 🤝");
+    const pScore = getScore(playerHand);
+    if (dScore > 21) endGame("¡EL CRUPIER SE PASÓ! Ganaste 🏆");
+    else if (pScore > dScore) endGame("¡GANASTE! 🏆");
+    else if (pScore < dScore) endGame("PERDISTE 💀");
+    else endGame("EMPATE 🤝");
 };
 
-document.getElementById('reset-btn').onclick = () => location.reload();
+document.getElementById('reset-btn').onclick = () => {
+    // Reiniciar mesa
+    playerHand = [];
+    dealerHand = [];
+    gameOver = false;
+    document.getElementById('player-cards').innerHTML = '';
+    document.getElementById('dealer-cards').innerHTML = '';
+    document.getElementById('player-score').innerText = '0';
+    document.getElementById('dealer-score').innerText = '0';
+    document.getElementById('message').innerText = '';
+    document.getElementById('hit-btn').classList.remove('hidden');
+    document.getElementById('stand-btn').classList.remove('hidden');
+    document.getElementById('reset-btn').classList.add('hidden');
+    
+    if (deck.length < 10) createDeck();
+    initGame();
+};
 
-// Iniciar juego
+document.getElementById('exit-btn').onclick = () => {
+    tg.close();
+};
+
+function initGame() {
+    // Reparto inicial
+    const p1 = deck.pop();
+    const p2 = deck.pop();
+    playerHand.push(p1, p2);
+    renderCard(p1, 'player-cards');
+    renderCard(p2, 'player-cards');
+    document.getElementById('player-score').innerText = getScore(playerHand);
+
+    const d1 = deck.pop();
+    dealerHand.push(d1);
+    renderCard(d1, 'dealer-cards');
+    document.getElementById('dealer-score').innerText = getScore(dealerHand);
+}
+
 createDeck();
-// Reparto inicial
-document.getElementById('hit-btn').click();
-document.getElementById('hit-btn').click();
+initGame();
