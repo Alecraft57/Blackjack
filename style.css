@@ -109,3 +109,20 @@ body {
     text-shadow: 2px 2px #000;
     margin: 0;
 }
+#stats-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 0;
+    border-radius: 0 0 15px 15px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #ffd700;
+}
+
+#stat-wins { color: #27ae60; }
+#stat-losses { color: #e74c3c; }
+
+#game-container {
+    padding-top: 0;
+}
