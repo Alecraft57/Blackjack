@@ -6,8 +6,32 @@ let playerHand = [];
 let dealerHand = [];
 let isGameOver = false;
 
+// Variables de puntuación
+let wins = 0;
+let losses = 0;
+
 const suits = ['❤️', '💎', '♣️', '♠️'];
 const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+// CARGAR DATOS AL INICIAR
+function loadStats() {
+    wins = localStorage.getItem('bj_wins') ? parseInt(localStorage.getItem('bj_wins')) : 0;
+    losses = localStorage.getItem('bj_losses') ? parseInt(localStorage.getItem('bj_losses')) : 0;
+    document.getElementById('stat-wins').innerText = wins;
+    document.getElementById('stat-losses').innerText = losses;
+}
+
+function saveStats(result) {
+    if (result === 'win') {
+        wins++;
+        localStorage.setItem('bj_wins', wins);
+    } else if (result === 'loss') {
+        losses++;
+        localStorage.setItem('bj_losses', losses);
+    }
+    document.getElementById('stat-wins').innerText = wins;
+    document.getElementById('stat-losses').innerText = losses;
+}
 
 function createDeck() {
     deck = [];
@@ -39,7 +63,7 @@ function drawCard(hand, elementId) {
     hand.push(card);
     const cardDiv = document.createElement('div');
     cardDiv.className = 'card';
-    cardDiv.innerHTML = `<div>${card.v}</div><div style="font-size:1.5rem">${card.s}</div>`;
+    cardDiv.innerHTML = `<div>${card.v}</div><div>${card.s}</div>`;
     if (card.s === '❤️' || card.s === '💎') cardDiv.style.color = 'red';
     document.getElementById(elementId).appendChild(cardDiv);
     return card;
@@ -57,10 +81,9 @@ function startNewGame() {
     document.getElementById('game-btns').classList.remove('hidden');
     document.getElementById('end-btns').classList.add('hidden');
 
-    // Reparto inicial
     drawCard(playerHand, 'player-cards');
     drawCard(playerHand, 'player-cards');
-    drawCard(dealerHand, 'dealer-cards'); // El crupier empieza con una visible
+    drawCard(dealerHand, 'dealer-cards');
 
     updateScores();
 }
@@ -75,13 +98,15 @@ document.getElementById('hit-btn').onclick = () => {
     drawCard(playerHand, 'player-cards');
     const score = calculateScore(playerHand);
     updateScores();
-    if (score > 21) finishGame("¡TE PASASTE! 💀");
+    if (score > 21) {
+        saveStats('loss');
+        finishGame("¡TE PASASTE! 💀");
+    }
 };
 
 document.getElementById('stand-btn').onclick = () => {
     if (isGameOver) return;
     
-    // Turno del Crupier
     while (calculateScore(dealerHand) < 17) {
         drawCard(dealerHand, 'dealer-cards');
     }
@@ -90,10 +115,15 @@ document.getElementById('stand-btn').onclick = () => {
     const pScore = calculateScore(playerHand);
     const dScore = calculateScore(dealerHand);
 
-    if (dScore > 21) finishGame("¡CRUPIER SE PASÓ! 🏆");
-    else if (pScore > dScore) finishGame("¡GANASTE! 🏆");
-    else if (pScore < dScore) finishGame("PERDISTE 💀");
-    else finishGame("EMPATE 🤝");
+    if (dScore > 21 || pScore > dScore) {
+        saveStats('win');
+        finishGame(dScore > 21 ? "¡CRUPIER SE PASÓ! 🏆" : "¡GANASTE! 🏆");
+    } else if (pScore < dScore) {
+        saveStats('loss');
+        finishGame("PERDISTE 💀");
+    } else {
+        finishGame("EMPATE 🤝");
+    }
 };
 
 function finishGame(message) {
@@ -107,5 +137,6 @@ function finishGame(message) {
 document.getElementById('rematch-btn').onclick = startNewGame;
 document.getElementById('exit-btn').onclick = () => tg.close();
 
-// Inicializar
+// Inicialización
+loadStats();
 startNewGame();
