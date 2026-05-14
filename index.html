@@ -3,35 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack Pro - Telegram</title>
+    <title>Blackjack FCT</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="game">
-        <h1>🃏 BLACKJACK 🃏</h1>
-        
-        <div class="board">
-            <div class="section">
-                <h3>Crupier</h3>
-                <div id="dealer-cards" class="cards-row"></div>
-                <p>Puntos: <span id="dealer-score">0</span></p>
+    <div id="game-container">
+        <div class="header">
+            <h1>🎰 CASINO 🃏</h1>
+        </div>
+
+        <div class="table">
+            <div class="hand-section">
+                <div class="label">CRUPIER</div>
+                <div id="dealer-cards" class="cards-display"></div>
+                <div class="score-badge">Puntos: <span id="dealer-score">0</span></div>
             </div>
 
-            <div class="section">
-                <h3>Tu Mano</h3>
-                <div id="player-cards" class="cards-row"></div>
-                <p>Puntos: <span id="player-score">0</span></p>
+            <div id="result-overlay" class="hidden">
+                <h2 id="result-text"></h2>
+            </div>
+
+            <div class="hand-section">
+                <div class="label">TU MANO</div>
+                <div id="player-cards" class="cards-display"></div>
+                <div class="score-badge">Puntos: <span id="player-score">0</span></div>
             </div>
         </div>
 
-        <p id="message"></p>
-
         <div class="controls">
-            <button id="hit-btn" class="btn">Pedir Carta</button>
-            <button id="stand-btn" class="btn">Plantarse</button>
-            <button id="reset-btn" class="btn hidden">Nueva Mano</button>
-            <button id="exit-btn" class="btn exit">Salir</button>
+            <div id="game-btns">
+                <button id="hit-btn" class="btn hit">PEDIR</button>
+                <button id="stand-btn" class="btn stand">PLANTARSE</button>
+            </div>
+            <div id="end-btns" class="hidden">
+                <button id="rematch-btn" class="btn rematch">VOLVER A JUGAR</button>
+                <button id="exit-btn" class="btn exit">SALIR</button>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
