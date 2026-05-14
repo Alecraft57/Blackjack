@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack Telegram</title>
+    <title>Blackjack Pro - Telegram</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Script oficial de Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -26,13 +25,14 @@
             </div>
         </div>
 
+        <p id="message"></p>
+
         <div class="controls">
             <button id="hit-btn" class="btn">Pedir Carta</button>
             <button id="stand-btn" class="btn">Plantarse</button>
-            <button id="reset-btn" class="btn hidden">Nueva Partida</button>
+            <button id="reset-btn" class="btn hidden">Nueva Mano</button>
+            <button id="exit-btn" class="btn exit">Salir</button>
         </div>
-
-        <p id="message"></p>
     </div>
     <script src="script.js"></script>
 </body>
