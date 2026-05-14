@@ -1,68 +1,111 @@
 body {
-    background-color: #1a472a;
+    background-color: #0e3d24;
     color: white;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
     overflow: hidden;
 }
 
-#game {
-    width: 95%;
-    max-width: 400px;
-    text-align: center;
-    background: rgba(0,0,0,0.4);
-    padding: 20px;
-    border-radius: 20px;
-    border: 2px solid #ffd700;
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-.cards-row {
-    display: flex;
-    justify-content: center;
-    min-height: 90px;
+.header h1 {
+    font-size: 1.5rem;
+    color: #ffd700;
+    text-shadow: 2px 2px #000;
     margin: 10px 0;
 }
 
+.table {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.hand-section {
+    text-align: center;
+}
+
+.label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 5px;
+}
+
+.cards-display {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    min-height: 85px;
+}
+
+/* Diseño de la Carta */
 .card {
     background: white;
     color: black;
     width: 55px;
     height: 80px;
-    margin: 3px;
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: 1.1em;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    font-size: 1.2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    border: 1px solid #999;
+}
+
+.score-badge {
+    background: rgba(0,0,0,0.5);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* Botones */
+.controls {
+    width: 100%;
+    padding-bottom: 20px;
+    text-align: center;
 }
 
 .btn {
-    padding: 12px 18px;
-    margin: 5px;
+    padding: 15px 25px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: bold;
+    font-size: 1rem;
+    margin: 5px;
     cursor: pointer;
-    min-width: 100px;
+    box-shadow: 0 4px #999;
 }
 
-#hit-btn { background: #e74c3c; color: white; }
-#stand-btn { background: #3498db; color: white; }
-#reset-btn { background: #f1c40f; color: black; width: 80%; }
-.exit { background: #555; color: white; }
+.btn:active { box-shadow: 0 2px #666; transform: translateY(2px); }
 
-.hidden { display: none; }
-#message { 
-    font-size: 1.3em; 
-    font-weight: bold; 
-    margin: 15px 0; 
+.hit { background: #e74c3c; color: white; }
+.stand { background: #3498db; color: white; }
+.rematch { background: #27ae60; color: white; width: 80%; }
+.exit { background: #7f8c8d; color: white; width: 80%; margin-top: 10px; }
+
+.hidden { display: none !important; }
+
+#result-text {
+    font-size: 2rem;
     color: #ffd700;
-    min-height: 1.5em;
+    text-shadow: 2px 2px #000;
+    margin: 0;
 }
